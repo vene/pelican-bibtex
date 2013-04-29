@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 
 from pelican import signals
 
+__version__ = '0.1'
+
 
 def add_publications(generator):
     """
