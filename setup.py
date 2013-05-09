@@ -16,7 +16,7 @@ Operating System :: Unix
 
 setup(
     name='pelican_bibtex',
-    description='A module for estimating Hemodynamical Response Function from functional MRI data',
+    description='Manage your academic publications page with Pelican and BibTeX',
     long_description=open('Readme.md').read(),
     version=pelican_bibtex.__version__,
     author='Vlad Niculae',
