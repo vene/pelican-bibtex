@@ -36,7 +36,10 @@ def add_publications(generator):
     """
     if 'PUBLICATIONS_SRC' not in generator.settings:
         return
-    from StringIO import StringIO
+    try:
+        from StringIO import StringIO
+    except ImportError:
+        from io import StringIO
     try:
         from pybtex.database.input.bibtex import Parser
         from pybtex.database.output.bibtex import Writer
