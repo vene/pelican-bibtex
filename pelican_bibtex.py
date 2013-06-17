@@ -50,8 +50,10 @@ def add_publications(generator):
     refs_file = generator.settings['PUBLICATIONS_SRC']
     try:
         bibdata_all = Parser().parse_file(refs_file)
-    except PybtexError:
-        logger.warn('`pelican_bibtex` failed to open file %s' % refs_file)
+    except PybtexError as e:
+        logger.warn('`pelican_bibtex` failed to parse file %s: %s' % (
+            refs_file,
+            str(e))
         return
 
     publications = []
