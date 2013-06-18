@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 from pelican import signals
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 
 def add_publications(generator):
@@ -31,7 +31,7 @@ def add_publications(generator):
     Output
     ------
     generator.context['publications']:
-        List of tuples (key, text, bibtex, pdf, slides, poster).
+        List of tuples (key, year, text, bibtex, pdf, slides, poster).
         See Readme.md for more details.
     """
     if 'PUBLICATIONS_SRC' not in generator.settings:
@@ -53,7 +53,7 @@ def add_publications(generator):
     except PybtexError as e:
         logger.warn('`pelican_bibtex` failed to parse file %s: %s' % (
             refs_file,
-            str(e))
+            str(e)))
         return
 
     publications = []
@@ -66,6 +66,7 @@ def add_publications(generator):
     for formatted_entry in formatted_entries:
         key = formatted_entry.key
         entry = bibdata_all.entries[key]
+        year = entry.fields.get('year')
         pdf = entry.fields.pop('pdf', None)
         slides = entry.fields.pop('slides', None)
         poster = entry.fields.pop('poster', None)
@@ -77,6 +78,7 @@ def add_publications(generator):
         text = formatted_entry.text.render(html_backend)
 
         publications.append((key,
+                             year,
                              text,
                              bib_buf.getvalue(),
                              pdf,
