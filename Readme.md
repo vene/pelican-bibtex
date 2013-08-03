@@ -87,7 +87,7 @@ using `forceescape`.
 <section id="content" class="body">
     <h1 class="entry-title">Publications</h1>
     <ul>
-    {% for key, text, bibtex, pdf, slides, poster in publications %}
+    {% for key, year, text, bibtex, pdf, slides, poster in publications %}
     <li id="{{ key }}">{{ text }}
     [&nbsp;<a href="javascript:disp('{{ bibtex|replace('\n', '\\n')|escape|forceescape }}');">Bibtex</a>&nbsp;]
     {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
