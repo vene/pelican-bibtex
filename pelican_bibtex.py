@@ -84,6 +84,7 @@ def add_publications(generator):
                              year,
                              text,
                              bib_buf.getvalue(),
+                             entry.fields['doi'],
                              pdf,
                              slides,
                              poster))
