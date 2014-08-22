@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 from pelican import signals
 
-__version__ = '0.2'
+__version__ = '0.2.1'
 
 
 def add_publications(generator):
@@ -70,9 +70,11 @@ def add_publications(generator):
         key = formatted_entry.key
         entry = bibdata_all.entries[key]
         year = entry.fields.get('year')
-        pdf = entry.fields.pop('pdf', None)
-        slides = entry.fields.pop('slides', None)
-        poster = entry.fields.pop('poster', None)
+        # This shouldn't really stay in the field dict
+        # but new versions of pybtex don't support pop
+        pdf = entry.fields.get('pdf', None)
+        slides = entry.fields.get('slides', None)
+        poster = entry.fields.get('poster', None)
 
         #render the bibtex string for the entry
         bib_buf = StringIO()
