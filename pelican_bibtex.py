@@ -81,11 +81,15 @@ def add_publications(generator):
         bibdata_this = BibliographyData(entries={key: entry})
         Writer().write_stream(bibdata_this, bib_buf)
         text = formatted_entry.text.render(html_backend)
+        doi = entry.fields.get('doi') if 'doi' in entry.fields.keys() else ""
+        url = entry.fields.get('url') if 'url' in entry.fields.keys() else ""
 
         publications.append((key,
                              year,
                              text,
                              bib_buf.getvalue(),
+                             doi,
+                             url,
                              pdf,
                              slides,
                              poster))
