@@ -22,6 +22,11 @@ Requirements
 pip install pybtex
 ```
 
+and optionally `latexcodec` if you want to use a latex encoded bibtex
+```bash
+pip install latexcodec
+```
+
 How to Use
 ==========
 
@@ -33,6 +38,14 @@ Configuration is simply:
 ```python
 PUBLICATIONS_SRC = 'content/pubs.bib'
 ```
+
+And optionally
+
+```python
+PUBLICATIONS_ENCODING = 'latex'
+```
+if your bibtex file is contains latex symbols
+
 
 If the file is present and readable, you will be able to find the `publications`
 variable in all templates.  It is a list of tuples with the following fields:

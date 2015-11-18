@@ -46,13 +46,27 @@ def add_publications(generator):
         from pybtex.database import BibliographyData, PybtexError
         from pybtex.backends import html
         from pybtex.style.formatting import plain
+
     except ImportError:
         logger.warn('`pelican_bibtex` failed to load dependency `pybtex`')
         return
 
     refs_file = generator.settings['PUBLICATIONS_SRC']
+
+    if 'PUBLICATIONS_ENCODING' in generator.settings:
+        encoding = generator.settings['PUBLICATIONS_ENCODING']
+    else:
+        encoding = None
+
+    if encoding == "latex":
+        try:
+            import latexcodec
+        except ImportError:
+            logger.warn('`pelican_bibtex` failed to load dependency `codecs` and `latexcodec`')
+            return
+
     try:
-        bibdata_all = Parser().parse_file(refs_file)
+        bibdata_all = Parser(encoding=encoding).parse_file(refs_file)
     except PybtexError as e:
         logger.warn('`pelican_bibtex` failed to parse file %s: %s' % (
             refs_file,
