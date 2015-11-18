@@ -113,6 +113,13 @@ using `forceescape`.
 {% endblock %}
 ```
 
+When using the `latex` encoding you might want to add some replace to remove the extra curly brackets in
+```python
+<li id="{{ key }}">{{ text | replace('{', '') | replace('}','') }}
+```
+
+
+
 Extending this plugin
 =====================
 
