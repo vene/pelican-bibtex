@@ -22,6 +22,11 @@ Requirements
 pip install pybtex
 ```
 
+and optionally `latexcodec` if you want to use a latex encoded bibtex
+```bash
+pip install latexcodec
+```
+
 How to Use
 ==========
 
@@ -34,10 +39,18 @@ Configuration is simply:
 PUBLICATIONS_SRC = 'content/pubs.bib'
 ```
 
-If the file is present and readable, you will be able to find the `publications`
-variable in all templates.  It is a list of tuples with the following fields:
+And optionally
+
+```python
+PUBLICATIONS_ENCODING = 'latex'
 ```
-(key, year, text, bibtex, pdf, slides, poster)
+if your bibtex file is contains latex symbols
+
+
+If the file is present and readable, you will be able to find the `publications`
+variable in all templates.  It is a list of dictionaries with the following keys:
+```
+key, year, text, bibtex, pdf, slides, poster
 ```
 
 1. `key` is the BibTeX key (identifier) of the entry.
@@ -87,18 +100,30 @@ using `forceescape`.
 <section id="content" class="body">
     <h1 class="entry-title">Publications</h1>
     <ul>
-    {% for key, year, text, bibtex, pdf, slides, poster in publications %}
-    <li id="{{ key }}">{{ text }}
-    [&nbsp;<a href="javascript:disp('{{ bibtex|replace('\n', '\\n')|escape|forceescape }}');">Bibtex</a>&nbsp;]
-    {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
-    {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
-    {% endfor %}
-    </li>
-    {% endfor %}
+      {% for group in publications|groupby('year')|reverse %}
+      <li> {{group.grouper}}
+        <ul>
+        {% for publication in group.list %}
+          <li id="{{ publication.key }}">{{ publication.text }}
+          [&nbsp;<a href="javascript:disp('{{ publication.bibtex|replace('\n', '\\n')|escape|forceescape }}');">Bibtex</a>&nbsp;]
+          {% for label, target in [('PDF', publication.pdf), ('Slides', publication.slides), ('Poster', publication.poster)] %}
+            {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
+          {% endfor %}
+          </li>
+        {% endfor %}
+        </ul></li>
+      {% endfor %}
     </ul>
 </section>
 {% endblock %}
 ```
+
+When using the `latex` encoding you might want to add some replace to remove the extra curly brackets in
+```python
+<li id="{{ key }}">{{ text | replace('{', '') | replace('}','') }}
+```
+
+
 
 Extending this plugin
 =====================
