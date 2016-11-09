@@ -48,9 +48,9 @@ if your bibtex file is contains latex symbols
 
 
 If the file is present and readable, you will be able to find the `publications`
-variable in all templates.  It is a list of tuples with the following fields:
+variable in all templates.  It is a list of dictionaries with the following keys:
 ```
-(key, year, text, bibtex, pdf, slides, poster)
+key, year, text, bibtex, pdf, slides, poster
 ```
 
 1. `key` is the BibTeX key (identifier) of the entry.
@@ -100,14 +100,19 @@ using `forceescape`.
 <section id="content" class="body">
     <h1 class="entry-title">Publications</h1>
     <ul>
-    {% for key, year, text, bibtex, pdf, slides, poster in publications %}
-    <li id="{{ key }}">{{ text }}
-    [&nbsp;<a href="javascript:disp('{{ bibtex|replace('\n', '\\n')|escape|forceescape }}');">Bibtex</a>&nbsp;]
-    {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
-    {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
-    {% endfor %}
-    </li>
-    {% endfor %}
+      {% for group in publications|groupby('year')|reverse %}
+      <li> {{group.grouper}}
+        <ul>
+        {% for publication in group.list %}
+          <li id="{{ publication.key }}">{{ publication.text }}
+          [&nbsp;<a href="javascript:disp('{{ publication.bibtex|replace('\n', '\\n')|escape|forceescape }}');">Bibtex</a>&nbsp;]
+          {% for label, target in [('PDF', publication.pdf), ('Slides', publication.slides), ('Poster', publication.poster)] %}
+            {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
+          {% endfor %}
+          </li>
+        {% endfor %}
+        </ul></li>
+      {% endfor %}
     </ul>
 </section>
 {% endblock %}

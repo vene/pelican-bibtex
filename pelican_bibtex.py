@@ -96,13 +96,13 @@ def add_publications(generator):
         Writer().write_stream(bibdata_this, bib_buf)
         text = formatted_entry.text.render(html_backend)
 
-        publications.append((key,
-                             year,
-                             text,
-                             bib_buf.getvalue(),
-                             pdf,
-                             slides,
-                             poster))
+        publications.append({'key': key,
+                             'year': year,
+                             'text': text,
+                             'bibtex': bib_buf.getvalue(),
+                             'pdf': pdf,
+                             'slides': slides,
+                             'poster': poster})
 
     generator.context['publications'] = publications
 
