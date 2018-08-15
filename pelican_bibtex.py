@@ -12,6 +12,7 @@ websites.
 # Unlicense (see UNLICENSE for details)
 
 import logging
+import collections
 logger = logging.getLogger(__name__)
 
 from pelican import signals
@@ -25,17 +26,20 @@ def add_publications(generator):
 
     Configuration
     -------------
-    generator.settings['PUBLICATIONS_SRC']:
-        local path to the BibTeX file to read.
+    generator.settings['PUBLICATIONS']:
+        Dictionary containing BibTeX files to read as values and their names as keys.
 
     Output
     ------
     generator.context['publications']:
-        List of tuples (key, year, text, bibtex, pdf, slides, poster).
+        Dictionary containing the name of the publication list a a key, bibliography entries as a value.
+        A bibliography entry contains of a list of tuples (key, year, text, bibtex, pdf, slides, poster).
         See Readme.md for more details.
     """
-    if 'PUBLICATIONS_SRC' not in generator.settings:
+    if 'PUBLICATIONS' not in generator.settings:
         return
+    if 'PUBLICATIONS_HEADER' not in generator.settings:
+        generator.context['PUBLICATIONS_HEADER'] = True
     try:
         from StringIO import StringIO
     except ImportError:
@@ -50,47 +54,51 @@ def add_publications(generator):
         logger.warn('`pelican_bibtex` failed to load dependency `pybtex`')
         return
 
-    refs_file = generator.settings['PUBLICATIONS_SRC']
-    try:
-        bibdata_all = Parser().parse_file(refs_file)
-    except PybtexError as e:
-        logger.warn('`pelican_bibtex` failed to parse file %s: %s' % (
-            refs_file,
-            str(e)))
-        return
+    refs = generator.settings['PUBLICATIONS']
+    generator.context['publications'] = collections.OrderedDict()
 
-    publications = []
+    for refs_name, refs_file in refs.items():
+        try:
+            bibdata_all = Parser().parse_file(refs_file)
+        except PybtexError as e:
+            logger.warn('`pelican_bibtex` failed to parse file %s: %s' % (
+                refs_file,
+                str(e)))
+            return
 
-    # format entries
-    plain_style = plain.Style()
-    html_backend = html.Backend()
-    formatted_entries = plain_style.format_entries(bibdata_all.entries.values())
+        publications = []
 
-    for formatted_entry in formatted_entries:
-        key = formatted_entry.key
-        entry = bibdata_all.entries[key]
-        year = entry.fields.get('year')
-        # This shouldn't really stay in the field dict
-        # but new versions of pybtex don't support pop
-        pdf = entry.fields.get('pdf', None)
-        slides = entry.fields.get('slides', None)
-        poster = entry.fields.get('poster', None)
+        # format entries
+        plain_style = plain.Style()
+        html_backend = html.Backend()
+        formatted_entries = plain_style.format_entries(bibdata_all.entries.values())
 
-        #render the bibtex string for the entry
-        bib_buf = StringIO()
-        bibdata_this = BibliographyData(entries={key: entry})
-        Writer().write_stream(bibdata_this, bib_buf)
-        text = formatted_entry.text.render(html_backend)
+        for formatted_entry in formatted_entries:
+            key = formatted_entry.key
+            entry = bibdata_all.entries[key]
+            year = entry.fields.get('year')
 
-        publications.append((key,
-                             year,
-                             text,
-                             bib_buf.getvalue(),
-                             pdf,
-                             slides,
-                             poster))
+            # This shouldn't really stay in the field dict
+            # but new versions of pybtex don't support pop
+            pdf = entry.fields.get('pdf', None)
+            slides = entry.fields.get('slides', None)
+            poster = entry.fields.get('poster', None)
 
-    generator.context['publications'] = publications
+            #render the bibtex string for the entry
+            bib_buf = StringIO()
+            bibdata_this = BibliographyData(entries={key: entry})
+            Writer().write_stream(bibdata_this, bib_buf)
+            text = formatted_entry.text.render(html_backend)
+
+            publications.append((key,
+                                year,
+                                text,
+                                bib_buf.getvalue(),
+                                pdf,
+                                slides,
+                                poster))
+
+        generator.context['publications'][refs_name] = sorted(publications, key=lambda pub: pub[1], reverse=True)
 
 
 def register():
