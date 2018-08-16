@@ -72,46 +72,46 @@ def add_publications(generator):
         return
 
     refs = generator.settings['PUBLICATIONS']
-    generator.context['publications'] = {}
+    generator.context['publications'] = collections.OrderedDict()
 
-    for refs_id in sorted(refs):
-        refs_data = refs[refs_id]
-        refs_file = refs_data['file']
+    for rid in refs:
+        ref = refs[rid]
+        bibfile = ref['file']
         try:
-            bibdata_all = Parser().parse_file(refs_file)
+            bibdata_all = Parser().parse_file(bibfile)
         except PybtexError as e:
             logger.warn('`pelican_bibtex` failed to parse file %s: %s' % (
-                refs_file,
+                bibfile,
                 str(e)))
             return
 
-        if 'title' in refs_data:
-            refs_title = refs_data['title']
+        if 'title' in ref:
+            title = ref['title']
         else:
-            refs_title = refs_id
+            title = rid
 
-        if 'header' in refs_data:
-            refs_header = refs_data['header']
+        if 'header' in ref:
+            header = ref['header']
         else:
-            refs_header = True
+            header = True
 
-        if 'split' in refs_data:
-            refs_split = refs_data['split']
+        if 'split' in ref:
+            split = ref['split']
         else:
-            refs_split = True
+            split = True
 
-        if 'split_link' in refs_data:
-            refs_split_link = refs_data['split_link']
+        if 'split_link' in ref:
+            split_link = ref['split_link']
         else:
-            refs_split_link = True
+            split_link = True
 
-        if 'bottom_link' in refs_data:
-            refs_bottom_link = refs_data['bottom_link']
+        if 'bottom_link' in ref:
+            bottom_link = ref['bottom_link']
         else:
-            refs_bottom_link = True
-            
-        if 'highlight' in refs_data:
-            highlights = refs_data['highlight']
+            bottom_link = True
+
+        if 'highlight' in ref:
+            highlights = ref['highlight']
         else:
             highlights = []
 
@@ -149,14 +149,14 @@ def add_publications(generator):
                                 slides,
                                 poster))
 
-        generator.context['publications'][refs_id] = {}
-        generator.context['publications'][refs_id]['title'] = refs_title
-        generator.context['publications'][refs_id]['header'] = refs_header
-        generator.context['publications'][refs_id]['split'] = refs_split
-        generator.context['publications'][refs_id]['bottom_link'] = refs_bottom_link
-        generator.context['publications'][refs_id]['split_link'] = refs_split_link
-        generator.context['publications'][refs_id]['data'] = collections.OrderedDict()
-        generator.context['publications'][refs_id]['data'] = sorted(publications, key=lambda pub: pub[1], reverse=True)
+        generator.context['publications'][rid] = {}
+        generator.context['publications'][rid]['title'] = title
+        generator.context['publications'][rid]['header'] = header
+        generator.context['publications'][rid]['split'] = split
+        generator.context['publications'][rid]['bottom_link'] = bottom_link
+        generator.context['publications'][rid]['split_link'] = split_link
+        generator.context['publications'][rid]['data'] = collections.OrderedDict()
+        generator.context['publications'][rid]['data'] = sorted(publications, key=lambda pub: pub[1], reverse=True)
 
 def register():
     signals.generator_init.connect(add_publications)
