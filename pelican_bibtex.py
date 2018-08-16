@@ -27,7 +27,22 @@ def add_publications(generator):
     Configuration
     -------------
     generator.settings['PUBLICATIONS']:
-        Dictionary containing BibTeX files to read as values and their names as keys.
+        Dictionary that contains bibliographies:
+          The key denotes the bibliographies name to use in headers
+          The values describe the BibTeX files to read
+        Mandatory for this plugin.
+    generator.settings['PUBLICATIONS_NAVBAR']:
+        Bool denoting whether a navigation bar containing links to each bibliography should be produced.
+        Defaults to 'True'.
+    generator.settings['PUBLICATIONS_HEADER']:
+        Bool denoting whether a header (h2) should be produced for each bibliography.
+        Defaults to 'True'.
+    generator.settings['PUBLICATIONS_SPLIT']:
+        Bool denoting whether bibliographies should be split by year (h3).
+        Defaults to 'True'.
+    generator.settings['PUBLICATIONS_HIGHLIGHTs']:
+        String, e.g., a name, that will be entailed in a <strong> tag to highlight.
+        Default: empty
 
     Output
     ------
@@ -36,11 +51,15 @@ def add_publications(generator):
         A bibliography entry contains of a list of tuples (key, year, text, bibtex, pdf, slides, poster).
         See Readme.md for more details.
     """
+
     if 'PUBLICATIONS' not in generator.settings:
         return
+    if 'PUBLICATIONS_NAVBAR' not in generator.settings:
+        generator.context['PUBLICATIONS_NAVBAR'] = True
     if 'PUBLICATIONS_HEADER' not in generator.settings:
         generator.context['PUBLICATIONS_HEADER'] = True
-
+    if 'PUBLICATIONS_SPLIT' not in generator.settings:
+        generator.context['PUBLICATIONS_SPLIT'] = True
     if 'PUBLICATIONS_HIGHLIGHTS' in generator.settings:
         highlights = generator.settings['PUBLICATIONS_HIGHLIGHTS']
     else:
