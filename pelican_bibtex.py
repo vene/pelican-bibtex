@@ -40,6 +40,11 @@ def add_publications(generator):
         return
     if 'PUBLICATIONS_HEADER' not in generator.settings:
         generator.context['PUBLICATIONS_HEADER'] = True
+
+    if 'PUBLICATIONS_HIGHLIGHTS' in generator.settings:
+        highlights = generator.settings['PUBLICATIONS_HIGHLIGHTS']
+    else:
+        highlights = []
     try:
         from StringIO import StringIO
     except ImportError:
@@ -89,6 +94,8 @@ def add_publications(generator):
             bibdata_this = BibliographyData(entries={key: entry})
             Writer().write_stream(bibdata_this, bib_buf)
             text = formatted_entry.text.render(html_backend)
+            for replace in highlights:
+              text = text.replace(replace, '<strong>' + replace + '</strong>')
 
             publications.append((key,
                                 year,
