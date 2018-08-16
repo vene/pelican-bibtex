@@ -56,14 +56,7 @@ def add_publications(generator):
         return
     if 'PUBLICATIONS_NAVBAR' not in generator.settings:
         generator.context['PUBLICATIONS_NAVBAR'] = True
-    if 'PUBLICATIONS_HEADER' not in generator.settings:
-        generator.context['PUBLICATIONS_HEADER'] = True
-    if 'PUBLICATIONS_SPLIT' not in generator.settings:
-        generator.context['PUBLICATIONS_SPLIT'] = True
-    if 'PUBLICATIONS_HIGHLIGHTS' in generator.settings:
-        highlights = generator.settings['PUBLICATIONS_HIGHLIGHTS']
-    else:
-        highlights = []
+
     try:
         from StringIO import StringIO
     except ImportError:
@@ -79,9 +72,10 @@ def add_publications(generator):
         return
 
     refs = generator.settings['PUBLICATIONS']
-    generator.context['publications'] = collections.OrderedDict()
+    generator.context['publications'] = {}
 
-    for refs_name, refs_file in refs.items():
+    for refs_name, refs_data in refs.items():
+        refs_file = refs_data['file']
         try:
             bibdata_all = Parser().parse_file(refs_file)
         except PybtexError as e:
@@ -89,6 +83,36 @@ def add_publications(generator):
                 refs_file,
                 str(e)))
             return
+
+        if 'title' in refs_data:
+            refs_title = refs_data['title']
+        else:
+            refs_title = refs_name
+
+        if 'header' in refs_data:
+            refs_header = refs_data['header']
+        else:
+            refs_header = True
+
+        if 'split' in refs_data:
+            refs_split = refs_data['split']
+        else:
+            refs_split = True
+
+        if 'split_link' in refs_data:
+            refs_split_link = refs_data['split_link']
+        else:
+            refs_split_link = True
+
+        if 'bottom_link' in refs_data:
+            refs_bottom_link = refs_data['bottom_link']
+        else:
+            refs_bottom_link = True
+            
+        if 'highlight' in refs_data:
+            highlights = refs_data['highlight']
+        else:
+            highlights = []
 
         publications = []
 
@@ -124,8 +148,14 @@ def add_publications(generator):
                                 slides,
                                 poster))
 
-        generator.context['publications'][refs_name] = sorted(publications, key=lambda pub: pub[1], reverse=True)
-
+        generator.context['publications'][refs_name] = {}
+        generator.context['publications'][refs_name]['title'] = refs_title
+        generator.context['publications'][refs_name]['header'] = refs_header
+        generator.context['publications'][refs_name]['split'] = refs_split
+        generator.context['publications'][refs_name]['bottom_link'] = refs_bottom_link
+        generator.context['publications'][refs_name]['split_link'] = refs_split_link
+        generator.context['publications'][refs_name]['data'] = collections.OrderedDict()
+        generator.context['publications'][refs_name]['data'] = sorted(publications, key=lambda pub: pub[1], reverse=True)
 
 def register():
     signals.generator_init.connect(add_publications)
