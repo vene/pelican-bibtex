@@ -74,7 +74,8 @@ def add_publications(generator):
     refs = generator.settings['PUBLICATIONS']
     generator.context['publications'] = {}
 
-    for refs_name, refs_data in refs.items():
+    for refs_id in sorted(refs):
+        refs_data = refs[refs_id]
         refs_file = refs_data['file']
         try:
             bibdata_all = Parser().parse_file(refs_file)
@@ -87,7 +88,7 @@ def add_publications(generator):
         if 'title' in refs_data:
             refs_title = refs_data['title']
         else:
-            refs_title = refs_name
+            refs_title = refs_id
 
         if 'header' in refs_data:
             refs_header = refs_data['header']
@@ -148,14 +149,14 @@ def add_publications(generator):
                                 slides,
                                 poster))
 
-        generator.context['publications'][refs_name] = {}
-        generator.context['publications'][refs_name]['title'] = refs_title
-        generator.context['publications'][refs_name]['header'] = refs_header
-        generator.context['publications'][refs_name]['split'] = refs_split
-        generator.context['publications'][refs_name]['bottom_link'] = refs_bottom_link
-        generator.context['publications'][refs_name]['split_link'] = refs_split_link
-        generator.context['publications'][refs_name]['data'] = collections.OrderedDict()
-        generator.context['publications'][refs_name]['data'] = sorted(publications, key=lambda pub: pub[1], reverse=True)
+        generator.context['publications'][refs_id] = {}
+        generator.context['publications'][refs_id]['title'] = refs_title
+        generator.context['publications'][refs_id]['header'] = refs_header
+        generator.context['publications'][refs_id]['split'] = refs_split
+        generator.context['publications'][refs_id]['bottom_link'] = refs_bottom_link
+        generator.context['publications'][refs_id]['split_link'] = refs_split_link
+        generator.context['publications'][refs_id]['data'] = collections.OrderedDict()
+        generator.context['publications'][refs_id]['data'] = sorted(publications, key=lambda pub: pub[1], reverse=True)
 
 def register():
     signals.generator_init.connect(add_publications)
