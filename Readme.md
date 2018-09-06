@@ -96,7 +96,7 @@ Template Example
 ================
 
 You probably want to define a 'publications.html' direct template.  Don't forget
-to add it to the `DIRECT\_TEMPLATES` configuration key.  Note that we are escaping
+to add it to the `DIRECT_TEMPLATES` configuration key.  Note that we are escaping
 the BibTeX string twice in order to properly display it.  This can be achieved
 using `forceescape`.
 
