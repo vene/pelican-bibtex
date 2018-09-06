@@ -100,7 +100,7 @@ to add it to the `DIRECT_TEMPLATES` configuration key.  Note that we are escapin
 the BibTeX string twice in order to properly display it.  This can be achieved
 using `forceescape`.
 
-```python
+```jinja2
 {% extends "page.html" %}
 
 {% block content %}
