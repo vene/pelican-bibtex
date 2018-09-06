@@ -101,34 +101,99 @@ the BibTeX string twice in order to properly display it.  This can be achieved
 using `forceescape`.
 
 ```python
-{% extends "base.html" %}
-{% block title %}Publications{% endblock %}
+{% extends "page.html" %}
+
 {% block content %}
 
-<script type="text/javascript">
-    function disp(s) {
-        var win;
-        var doc;
-        win = window.open("", "WINDOWID");
-        doc = win.document;
-        doc.open("text/plain");
-        doc.write("<pre>" + s + "</pre>");
-        doc.close();
-    }
-</script>
+<!-- header part: original bootstrap pages content block -->
 <section id="content" class="body">
-    <h1 class="entry-title">Publications</h1>
-    <ul>
-    {% for key, year, text, bibtex, pdf, slides, poster in publications %}
-    <li id="{{ key }}">{{ text }}
-    [&nbsp;<a href="javascript:disp('{{ bibtex|replace('\n', '\\n')|escape|forceescape }}');">Bibtex</a>&nbsp;]
-    {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
-    {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
-    {% endfor %}
-    </li>
-    {% endfor %}
-    </ul>
+    {% if page.title %}
+        <h1 class="entry-title">{{ page.title }}</h1>
+    {% endif %}
+    {% import 'includes/translations.html' as translations with context %}
+    {{ translations.translations_for(page) }}
+    {% if PDF_PROCESSOR %}
+        <a href="{{ SITEURL }}/pdf/{{ page.slug }}.pdf">
+            get the pdf
+        </a>
+    {% endif %}
+    <div class="entry-content">
+        {{ page.content }}
+
+<!-- add header navbar -->
+{% if PUBLICATIONS_NAVBAR %}
+    <p>
+        {% for bib in publications|sort %}
+            <a class="reference external" href="#{{ bib }}">{{ publications[bib]['title'] }}</a>
+            {% if not loop.last %}&middot;{% endif %}
+        {% endfor %}
+    </p>
+{% endif %}
+
+<!-- add publication list -->
+{% for bib in publications|sort %}
+    <div class="publications" id="{{ bib }}">
+        {% if publications[bib]['header'] %}
+          <h2>{{ publications[bib]['title'] }}</h2>
+        {% endif %}
+        {% if publications[bib]['split'] %}
+            {% set remember = namespace(year="0") %}
+            {% for key, year, text, bibtex, pdf, slides, poster in publications[bib]['data'] %}
+                {% if remember.year != year %}
+                    {% if remember.year !="0" %}
+                        </ul>
+                        {% if publications[bib]['split_link'] %}
+                            <div style="text-align:right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></div>
+                        {% endif %}
+                    {% endif %}
+                    <h3>{{ year }}</h3>
+                    <ul>
+                    {% set remember.year=year %}
+                {% endif %}
+                <li style="margin: 5px 0;" id="{{ key }}">
+                    {{ text }}
+                    [&nbsp;<a data-toggle="collapse" data-target="#{{ key}}-bib">BibTeX</a>&nbsp;]
+                    {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
+                        {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
+                    {% endfor %}
+                    <div style="clear:both" id="{{ key }}-bib" class="collapse">
+                        {% set bibtex = '```tex\n' + bibtex + '\n```' %}
+                        {{ bibtex|md }}
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <ul>
+                {% for key, year, text, bibtex, pdf, slides, poster in publications[bib]['data'] %}
+                    <li style="margin: 5px 0;" id="{{ key }}">
+                        {{ text }}
+                        [&nbsp;<a data-toggle="collapse" data-target="#{{ key}}-bib">BibTeX</a>&nbsp;]
+                        {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
+                            {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
+                        {% endfor %}
+                        <div style="clear:both" id="{{ key }}-bib" class="collapse">
+                            {% set bibtex = '```tex\n' + bibtex + '\n```' %}
+                            {{ bibtex|md }}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if not loop.last and publications[bib]['bottom_link'] %}
+            <div style="text-align:right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></div>
+        {% endif %}
+    </div>
+{% endfor %}
+
+<!-- footer part: original bootstrap pages content block -->
+        {% if page.comments == 'enabled' %}
+            {% include 'includes/comments.html' %}
+        {% endif %}
+    </div>
 </section>
+
 {% endblock %}
 ```
 
