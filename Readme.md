@@ -1,13 +1,9 @@
 Pelican BibTeX
 ==============
 
-Organize your scientific publications with BibTeX in Pelican
-
-Author          | Vlad Niculae
-----------------|-----
-Author Email    | vlad@vene.ro
-Author Homepage | http://vene.ro
-Github Account  | https://github.com/vene
+Organize your scientific publications with BibTeX in Pelican. Original author is Vlad Niculae (http://vene.ro).
+This project is forked from https://github.com/vene and provides support for multiple BibTeX files and slightly
+more advanced sorting and displaying options.
 
 *Note*: This code is unlicensed. It was not submitted to the `pelican-plugins`
 official repository because of the license constraint imposed there.
@@ -28,14 +24,20 @@ How to Use
 This plugin reads a user-specified BibTeX file and populates the context with
 a list of publications, ready to be used in your Jinja2 template.
 
-Configuration is simply:
+The plugin is configured as follows in ```pelicanconf.py```:
 
 ```python
-PUBLICATIONS_SRC = 'content/pubs.bib'
+PUBLICATIONS = {
+  'pubs': {
+    'title': 'My publications',
+    'file': 'content/publications.bib' }
+}
 ```
 
-If the file is present and readable, you will be able to find the `publications`
-variable in all templates.  It is a list of tuples with the following fields:
+You will be able to find a `publications` variable in all templates. If the given
+```file``` is present and readable, dictionary entries will also be accessible in the template.
+Instead of a ```file``` entry, it will contain a ```data``` field containing the following tuple:
+
 ```
 (key, year, text, bibtex, pdf, slides, poster)
 ```
