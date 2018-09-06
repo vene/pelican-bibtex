@@ -28,9 +28,7 @@ The plugin is configured as follows in ```pelicanconf.py```:
 
 ```python
 PUBLICATIONS = {
-  'pubs': {
-    'title': 'My publications',
-    'file': 'content/publications.bib' }
+  'pubs': { 'file': 'content/publications.bib' }
 }
 ```
 
@@ -61,6 +59,38 @@ This plugin will take all defined fields and make them available in the template
 If a field is not defined, the tuple field will be `None`.  Furthermore, the
 fields are stripped from the generated BibTeX (found in the `bibtex` field).
 
+Advanced Configuration
+======================
+
+The configuration allows for multiple files and control over several appearance features like this:
+
+```python
+PUBLICATIONS = {
+  'simple-example': { 'file': 'content/all.bib' },
+  'modified-defaults': {
+    'file': 'content/all.bib',
+    'title': 'Different Appearance',
+    'header': False,
+    'split': False,
+    'split_link': False,
+    'bottom_link': False,
+    'highlight': ['Patrick Holthaus'] }
+}
+
+PUBLICATIONS_NAVBAR = True
+```
+
+The following optional fields can be specified for each bibliography in the ```PUBLICATIONS``` variable:
+
+* ```title```: Title for this bibliography (h2), if empty, the bibliographies key is used instead.
+* ```header```: Bool denoting whether a header (h2) should be produced for this bibliography.
+* ```split```: Bool denoting whether bibliographies should be split by year (h3).
+* ```split_link```: Bool denoting whether to generate a "link to top" after each year's section.
+* ```bottom_link```: Bool denoting whether to generate a "link to top" after this bibliography.
+* ```highlight```: String, e.g., a name, that will be entailed in a \<strong\> tag to highlight.
+
+The ```PUBLICATIONS_NAVBAR``` variable can be used to specify whether or not to produce a line that contains
+links to each bibliography section.
 
 Template Example
 ================
