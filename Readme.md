@@ -18,6 +18,12 @@ Requirements
 pip install pybtex
 ```
 
+The example template requires `Markdown` at runtime.
+
+```bash
+pip install Markdown
+```
+
 How to Configure the Plugin
 ===========================
 
@@ -135,9 +141,9 @@ Additionally, the following header entries can be used per page to restrict what
 :bibheader: 2
 ```
 
-By default, all bibliographies are considered and included with a `<h2>` tag.
+By default, all bibliographies are considered and included with an `<h2>` tag.
 
-<details><summary><strong>Click to reveal template</strong></summary>
+<details><summary><strong>Click to reveal example template</strong></summary>
 
 ```jinja2
 {% extends "page.html" %}
