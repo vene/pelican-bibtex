@@ -197,6 +197,21 @@ using `forceescape`.
 {% endblock %}
 ```
 
+This template uses Jinja filter to parse the resulting text with Markdown.
+
+To make it work, you will have to include `Markdown` in the `pelicanconf.py` with 
+
+    from markdown import Markdown
+
+And define the function `md` in `pelicanconf.py` as such:
+
+    def md(content, *args):
+        return markdown.convert(content)
+    JINJA_FILTERS = {
+        'md': md,
+    }
+
+
 Extending this plugin
 =====================
 
