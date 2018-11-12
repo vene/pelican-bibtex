@@ -137,9 +137,7 @@ Additionally, the following header entries can be used per page to restrict what
 
 By default, all bibliographies are considered and included with a `<h2>` tag.
 
-<details><summary>
-**Click to reveal template**
-</summary>
+<details><summary><strong>Click to reveal template</strong></summary>
 
 ```jinja2
 {% extends "page.html" %}
