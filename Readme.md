@@ -113,7 +113,12 @@ Create an appropriate template file in the folder ```templates``` and add it to 
 EXTRA_TEMPLATES_PATHS = [ 'templates' ]
 ```
 
-<div class="alert tip">If you don't define a template, this plugin won't achieve you any visible result.</div>
+---
+**NOTE**
+
+If you don't define a template, this plugin won't achieve you any visible result.
+
+---
 
 <details><summary>Click to reveal template</summary>
 
@@ -244,9 +249,12 @@ EXTRA_TEMPLATES_PATHS = [ 'templates' ]
 
 </details>
 
-<div class="alert tip">
+---
+**NOTE**
+
 This template uses Jinja filter to parse the resulting text with Markdown.
-</div>
+
+---
 
 To make it work, you will have to include `Markdown` in the `pelicanconf.py` with:
 
