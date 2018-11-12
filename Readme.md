@@ -66,14 +66,25 @@ As a result, the `publications` variable (`dict`) will contain a field with the 
 }
 ```
 
-If a field is not defined, the tuple field will be `None`.  Furthermore, the
-fields are stripped from the generated *BibTeX* (found in the `bibtex` field).
+If a field is not defined, the tuple field will be `None`.  Furthermore, the fields are stripped from the generated *BibTeX* (found in the `bibtex` field).
 
 Advanced Configuration
 ======================
 
-The configuration allows for multiple files and control over several variables that are also passed on to the
-The following example contains all variables that can be configured through the plugin. All these
+The configuration allows for multiple files and control over several variables **that are also passed on to the template phase**.
+The following optional fields can be specified for each bibliography in the `PUBLICATIONS` variable:
+
+* `title`: Title for this bibliography (h2), if empty, the bibliographies key is used instead.
+* `header`: Bool denoting whether a header (h2) should be produced for this bibliography.
+* `split`: Bool denoting whether bibliographies should be split by year (h3).
+* `split_link`: Bool denoting whether to generate a "link to top" after each year's section.
+* `bottom_link`: Bool denoting whether to generate a "link to top" after this bibliography.
+* `highlight`: String, e.g., a name, that will be entailed in a \<strong\> tag to highlight.
+* `all_bibtex`: Provide a link to the original .bib file
+
+A `PUBLICATIONS_NAVBAR` variable can be used in `pelicanconf.py` to specify whether or not to produce a line that contains links to each bibliography section.
+
+The following example contains a default entry `simple-example` plus a secondary bibliography `modified-defaults` in which all variables that can be configured through the plugin are set to non-standard.
 
 ```python
 PUBLICATIONS = {
@@ -91,19 +102,6 @@ PUBLICATIONS = {
 
 PUBLICATIONS_NAVBAR = True
 ```
-
-The following optional fields can be specified for each bibliography in the ```PUBLICATIONS``` variable:
-
-* ```title```: Title for this bibliography (h2), if empty, the bibliographies key is used instead.
-* ```header```: Bool denoting whether a header (h2) should be produced for this bibliography.
-* ```split```: Bool denoting whether bibliographies should be split by year (h3).
-* ```split_link```: Bool denoting whether to generate a "link to top" after each year's section.
-* ```bottom_link```: Bool denoting whether to generate a "link to top" after this bibliography.
-* ```highlight```: String, e.g., a name, that will be entailed in a \<strong\> tag to highlight.
-* ```all_bibtex```: Provide a link to the original .bib file
-
-The ```PUBLICATIONS_NAVBAR``` variable can be used to specify whether or not to produce a line that contains
-links to each bibliography section.
 
 Template Example
 ================
@@ -251,9 +249,14 @@ If you don't define a template, this plugin won't achieve you any visible result
 
 </details>
 
+---
+**NOTE**
+
 This template uses Jinja filter to parse the resulting text with Markdown.
 
-To make it work, you will have to include `Markdown` in the `pelicanconf.py` with 
+---
+
+To make it work, you will have to include `Markdown` in the `pelicanconf.py` with:
 
 ```python
 from markdown import Markdown
@@ -267,6 +270,12 @@ def md(content, *args):
 JINJA_FILTERS = {
     'md': md,
 }
+```
+
+This template needs to be included in you page by adding the following to the header section:
+
+```rst
+:template: publications
 ```
 
 Extending this plugin
