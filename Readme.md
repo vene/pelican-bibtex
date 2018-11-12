@@ -134,61 +134,88 @@ using `forceescape`.
     </p>
 {% endif %}
 
+<!-- check page header -->
+{% if page.bibliographies %}
+  {% set bibliographies = page.bibliographies.split(',') %}
+{% else %}
+  {% set bibliographies = publications.keys() %}
+{% endif %}
+{% if page.bibheader %}
+  {% set mainheader = page.bibheader %}
+  {% set splitheader = mainheader|int() + 1 %}
+{% else %}
+  {% set mainheader = 2 %}
+  {% set splitheader = 3 %}
+{% endif %}
+
 <!-- add publication list -->
 {% for bib in publications|sort %}
-    <div class="publications" id="{{ bib }}">
-        {% if publications[bib]['header'] %}
-          <h2>{{ publications[bib]['title'] }}</h2>
-        {% endif %}
-        {% if publications[bib]['split'] %}
-            {% set remember = namespace(year="0") %}
-            {% for key, year, text, bibtex, pdf, slides, poster in publications[bib]['data'] %}
-                {% if remember.year != year %}
-                    {% if remember.year !="0" %}
-                        </ul>
-                        {% if publications[bib]['split_link'] %}
-                            <div style="text-align:right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></div>
-                        {% endif %}
-                    {% endif %}
-                    <h3>{{ year }}</h3>
-                    <ul>
-                    {% set remember.year=year %}
-                {% endif %}
-                <li style="margin: 5px 0;" id="{{ key }}">
-                    {{ text }}
-                    [&nbsp;<a data-toggle="collapse" data-target="#{{ key}}-bib">BibTeX</a>&nbsp;]
-                    {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
-                        {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
-                    {% endfor %}
-                    <div style="clear:both" id="{{ key }}-bib" class="collapse">
-                        {% set bibtex = '```tex\n' + bibtex + '\n```' %}
-                        {{ bibtex|md }}
-                    </div>
-                </li>
-            {% endfor %}
-            </ul>
-        {% else %}
-            <ul>
-                {% for key, year, text, bibtex, pdf, slides, poster in publications[bib]['data'] %}
-                    <li style="margin: 5px 0;" id="{{ key }}">
-                        {{ text }}
-                        [&nbsp;<a data-toggle="collapse" data-target="#{{ key}}-bib">BibTeX</a>&nbsp;]
-                        {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
-                            {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
-                        {% endfor %}
-                        <div style="clear:both" id="{{ key }}-bib" class="collapse">
-                            {% set bibtex = '```tex\n' + bibtex + '\n```' %}
-                            {{ bibtex|md }}
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-
-        {% if not loop.last and publications[bib]['bottom_link'] %}
-            <div style="text-align:right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></div>
-        {% endif %}
-    </div>
+    {% if bib in bibliographies %}
+      <div class="publications" id="{{ bib }}">
+          {% if publications[bib]['header'] %}
+            <h{{ mainheader }}>{{ publications[bib]['title'] }}</h{{ mainheader }}>
+          {% endif %}
+          {% if publications[bib]['all_bibtex'] %}
+          {% set ns = namespace(fbt='') %}
+          {% for key, year, text, bibtex, pdf, slides, poster in publications[bib]['data'] %}
+            {% set ns.fbt = ns.fbt + bibtex %}
+          {% endfor %}
+          You can <a href="{{ publications[bib]['path'] }}" download>download</a> or <a data-toggle="collapse" data-target="#{{ bib }}-bib">display</a> all {{ publications[bib]['title']|lower }} in BibTeX format.
+          <div style="clear:both" id="{{ bib }}-bib" class="collapse">
+            {% set fbt = '```tex\n' + ns.fbt + '```' %}
+            {{ fbt|md }}
+            <a data-toggle="collapse" data-target="#{{ bib }}-bib">Hide BibTeX for all {{ publications[bib]['title']|lower }}</a>.
+          </div>
+          {% endif %}
+          {% if publications[bib]['split'] %}
+              {% set remember = namespace(year="0") %}
+              {% for key, year, text, bibtex, pdf, slides, poster in publications[bib]['data'] %}
+                  {% if remember.year != year %}
+                      {% if remember.year !="0" %}
+                          </ul>
+                          {% if publications[bib]['split_link'] %}
+                              <div style="text-align:right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></div>
+                          {% endif %}
+                      {% endif %}
+                      <h{{ splitheader }}>{{ year }}</h{{ splitheader }}>
+                      <ul>
+                      {% set remember.year=year %}
+                  {% endif %}
+                  <li style="margin: 5px 0;" id="{{ key }}">
+                      {{ text }}
+                      [&nbsp;<a data-toggle="collapse" data-target="#{{ key}}-bib">BibTeX</a>&nbsp;]
+                      {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
+                          {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
+                      {% endfor %}
+                      <div style="clear:both" id="{{ key }}-bib" class="collapse">
+                          {% set bibtex = '```tex\n' + bibtex + '```' %}
+                          {{ bibtex|md }}
+                      </div>
+                  </li>
+              {% endfor %}
+              </ul>
+          {% else %}
+              <ul>
+                  {% for key, year, text, bibtex, pdf, slides, poster in publications[bib]['data'] %}
+                      <li style="margin: 5px 0;" id="{{ key }}">
+                          {{ text }}
+                          [&nbsp;<a data-toggle="collapse" data-target="#{{ key }}-bib">BibTeX</a>&nbsp;]
+                          {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
+                              {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
+                          {% endfor %}
+                          <div style="clear:both" id="{{ key }}-bib" class="collapse">
+                              {% set bibtex = '```tex\n' + bibtex + '```' %}
+                              {{ bibtex|md }}
+                          </div>
+                      </li>
+                  {% endfor %}
+              </ul>
+          {% endif %}
+          {% if not loop.last and publications[bib]['bottom_link'] %}
+              <div style="text-align:right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></div>
+          {% endif %}
+      </div>
+    {% endif %}
 {% endfor %}
 
 <!-- footer part: original bootstrap pages content block -->
@@ -199,6 +226,7 @@ using `forceescape`.
 </section>
 
 {% endblock %}
+
 ```
 
 </details>
