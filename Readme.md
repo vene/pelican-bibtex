@@ -24,7 +24,16 @@ How to Use
 This plugin reads a user-specified BibTeX file and populates the context with
 a list of publications, ready to be used in your Jinja2 template.
 
-The plugin is configured as follows in ```pelicanconf.py```:
+As with all pelican plugins, you need to specify the path in which pelican searches for plugins.
+Let's assume you have cloned or downloaded this plugin to the folder ```plugins/pelican-bibtex``` inside your pelican folder.
+You then need to configure pelican like this by inserting the following into in ```pelicanconf.py```:
+
+```python
+PLUGIN_PATHS = [ 'plugins' ]
+PLUGINS = [ 'other-plugin-a', 'other-plugin-b', 'pelican-bibtex' ]
+```
+
+The plugin itself is configured as follows (also in ```pelicanconf.py```):
 
 ```python
 PUBLICATIONS = {
@@ -97,10 +106,19 @@ links to each bibliography section.
 Template Example
 ================
 
-You probably want to define a 'publications.html' direct template.  Don't forget
-to add it to the `DIRECT_TEMPLATES` configuration key.  Note that we are escaping
-the BibTeX string twice in order to properly display it.  This can be achieved
-using `forceescape`.
+You probably want to define a 'publications.html' direct template that makes use of the variables this plugin defines.
+Create an appropriate template file in the folder ```templates``` and add it to pelican's search path by editing ```pelicanconf.py```:
+
+```python
+EXTRA_TEMPLATES_PATHS = [ 'templates' ]
+```
+
+---
+**NOTE**
+
+If you don't define a template, this plugin won't achieve you any visible result.
+
+---
 
 <details><summary>Click to reveal template</summary>
 
