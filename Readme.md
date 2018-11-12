@@ -18,7 +18,7 @@ Requirements
 pip install pybtex
 ```
 
-The example template requires `Markdown` at runtime.
+The example template (which is optional) requires `Markdown` at runtime.
 
 ```bash
 pip install Markdown
@@ -166,12 +166,12 @@ By default, all bibliographies are considered and included with an `<h2>` tag.
 
 <!-- add header navbar -->
 {% if PUBLICATIONS_NAVBAR %}
-    <p>
-        {% for bib in publications|sort %}
-            <a class="reference external" href="#{{ bib }}">{{ publications[bib]['title'] }}</a>
-            {% if not loop.last %}&middot;{% endif %}
-        {% endfor %}
-    </p>
+<p>
+  {% for bib in publications|sort %}
+    <a class="reference external" href="#{{ bib }}">{{ publications[bib]['title'] }}</a>
+    {% if not loop.last %}&middot;{% endif %}
+  {% endfor %}
+</p>
 {% endif %}
 
 <!-- check page header -->
@@ -190,72 +190,72 @@ By default, all bibliographies are considered and included with an `<h2>` tag.
 
 <!-- add publication list -->
 {% for bib in publications|sort %}
-    {% if bib in bibliographies %}
-      <div class="publications" id="{{ bib }}">
-          {% if publications[bib]['header'] %}
-            <h{{ mainheader }}>{{ publications[bib]['title'] }}</h{{ mainheader }}>
-          {% endif %}
-          {% if publications[bib]['all_bibtex'] %}
-          {% set ns = namespace(fbt='') %}
-          {% for key, year, text, bibtex, pdf, slides, poster in publications[bib]['data'] %}
-            {% set ns.fbt = ns.fbt + bibtex %}
-          {% endfor %}
-          You can <a href="{{ publications[bib]['path'] }}" download>download</a> or <a data-toggle="collapse" data-target="#{{ bib }}-bib">display</a> all {{ publications[bib]['title']|lower }} in BibTeX format.
-          <div style="clear:both" id="{{ bib }}-bib" class="collapse">
-            {% set fbt = '```tex\n' + ns.fbt + '```' %}
-            {{ fbt|md }}
-            <a data-toggle="collapse" data-target="#{{ bib }}-bib">Hide BibTeX for all {{ publications[bib]['title']|lower }}</a>.
-          </div>
-          {% endif %}
-          {% if publications[bib]['split'] %}
-              {% set remember = namespace(year="0") %}
-              {% for key, year, text, bibtex, pdf, slides, poster in publications[bib]['data'] %}
-                  {% if remember.year != year %}
-                      {% if remember.year !="0" %}
-                          </ul>
-                          {% if publications[bib]['split_link'] %}
-                              <div style="text-align:right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></div>
-                          {% endif %}
-                      {% endif %}
-                      <h{{ splitheader }}>{{ year }}</h{{ splitheader }}>
-                      <ul>
-                      {% set remember.year=year %}
-                  {% endif %}
-                  <li style="margin: 5px 0;" id="{{ key }}">
-                      {{ text }}
-                      [&nbsp;<a data-toggle="collapse" data-target="#{{ key}}-bib">BibTeX</a>&nbsp;]
-                      {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
-                          {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
-                      {% endfor %}
-                      <div style="clear:both" id="{{ key }}-bib" class="collapse">
-                          {% set bibtex = '```tex\n' + bibtex + '```' %}
-                          {{ bibtex|md }}
-                      </div>
-                  </li>
-              {% endfor %}
-              </ul>
-          {% else %}
-              <ul>
-                  {% for key, year, text, bibtex, pdf, slides, poster in publications[bib]['data'] %}
-                      <li style="margin: 5px 0;" id="{{ key }}">
-                          {{ text }}
-                          [&nbsp;<a data-toggle="collapse" data-target="#{{ key }}-bib">BibTeX</a>&nbsp;]
-                          {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
-                              {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
-                          {% endfor %}
-                          <div style="clear:both" id="{{ key }}-bib" class="collapse">
-                              {% set bibtex = '```tex\n' + bibtex + '```' %}
-                              {{ bibtex|md }}
-                          </div>
-                      </li>
-                  {% endfor %}
-              </ul>
-          {% endif %}
-          {% if not loop.last and publications[bib]['bottom_link'] %}
-              <div style="text-align:right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></div>
-          {% endif %}
+  {% if bib in bibliographies %}
+    <div class="publications" id="{{ bib }}">
+      {% if publications[bib]['header'] %}
+        <h{{ mainheader }}>{{ publications[bib]['title'] }}</h{{ mainheader }}>
+      {% endif %}
+      {% if publications[bib]['all_bibtex'] %}
+      {% set ns = namespace(fbt='') %}
+      {% for key, year, text, bibtex, pdf, slides, poster in publications[bib]['data'] %}
+        {% set ns.fbt = ns.fbt + bibtex %}
+      {% endfor %}
+      You can <a href="{{ publications[bib]['path'] }}" download>download</a> or <a data-toggle="collapse" data-target="#{{ bib }}-bib">display</a> all {{ publications[bib]['title']|lower }} in BibTeX format.
+      <div style="clear:both" id="{{ bib }}-bib" class="collapse">
+        {% set fbt = '```tex\n' + ns.fbt + '```' %}
+        {{ fbt|md }}
+        <a data-toggle="collapse" data-target="#{{ bib }}-bib">Hide BibTeX for all {{ publications[bib]['title']|lower }}</a>.
       </div>
-    {% endif %}
+      {% endif %}
+      {% if publications[bib]['split'] %}
+        {% set remember = namespace(year="0") %}
+        {% for key, year, text, bibtex, pdf, slides, poster in publications[bib]['data'] %}
+          {% if remember.year != year %}
+            {% if remember.year !="0" %}
+              </ul>
+              {% if publications[bib]['split_link'] %}
+                <div style="text-align:right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></div>
+              {% endif %}
+            {% endif %}
+            <h{{ splitheader }}>{{ year }}</h{{ splitheader }}>
+            <ul>
+            {% set remember.year=year %}
+          {% endif %}
+          <li style="margin: 5px 0;" id="{{ key }}">
+            {{ text }}
+            [&nbsp;<a data-toggle="collapse" data-target="#{{ key}}-bib">BibTeX</a>&nbsp;]
+            {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
+              {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
+            {% endfor %}
+            <div style="clear:both" id="{{ key }}-bib" class="collapse">
+              {% set bibtex = '```tex\n' + bibtex + '```' %}
+              {{ bibtex|md }}
+            </div>
+          </li>
+        {% endfor %}
+        </ul>
+      {% else %}
+        <ul>
+          {% for key, year, text, bibtex, pdf, slides, poster in publications[bib]['data'] %}
+            <li style="margin: 5px 0;" id="{{ key }}">
+              {{ text }}
+              [&nbsp;<a data-toggle="collapse" data-target="#{{ key }}-bib">BibTeX</a>&nbsp;]
+              {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
+                {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
+              {% endfor %}
+              <div style="clear:both" id="{{ key }}-bib" class="collapse">
+                {% set bibtex = '```tex\n' + bibtex + '```' %}
+                {{ bibtex|md }}
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      {% if not loop.last and publications[bib]['bottom_link'] %}
+        <div style="text-align:right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></div>
+      {% endif %}
+    </div>
+  {% endif %}
 {% endfor %}
 
 <!-- footer part: original bootstrap pages content block -->
@@ -266,7 +266,6 @@ By default, all bibliographies are considered and included with an `<h2>` tag.
 </section>
 
 {% endblock %}
-
 ```
 
 </details>
