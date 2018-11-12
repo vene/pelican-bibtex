@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 from pelican import signals
 
+import os.path
+
 __version__ = '0.2.1'
 
 
@@ -109,6 +111,11 @@ def add_publications(generator):
             bottom_link = ref['bottom_link']
         else:
             bottom_link = True
+        
+        if 'all_bibtex' in ref:
+            all_bibtex = ref['all_bibtex']
+        else:
+            all_bibtex = False
 
         if 'highlight' in ref:
             highlights = ref['highlight']
@@ -151,10 +158,12 @@ def add_publications(generator):
 
         generator.context['publications'][rid] = {}
         generator.context['publications'][rid]['title'] = title
+        generator.context['publications'][rid]['path'] = os.path.basename(bibfile)
         generator.context['publications'][rid]['header'] = header
         generator.context['publications'][rid]['split'] = split
         generator.context['publications'][rid]['bottom_link'] = bottom_link
         generator.context['publications'][rid]['split_link'] = split_link
+        generator.context['publications'][rid]['all_bibtex'] = all_bibtex
         generator.context['publications'][rid]['data'] = collections.OrderedDict()
         generator.context['publications'][rid]['data'] = sorted(publications, key=lambda pub: pub[1], reverse=True)
 
