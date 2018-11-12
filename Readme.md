@@ -74,7 +74,8 @@ PUBLICATIONS = {
     'split': False,
     'split_link': False,
     'bottom_link': False,
-    'highlight': ['Patrick Holthaus'] }
+    'highlight': ['Patrick Holthaus'],
+    'all_bibtex': True }
 }
 
 PUBLICATIONS_NAVBAR = True
@@ -88,6 +89,7 @@ The following optional fields can be specified for each bibliography in the ```P
 * ```split_link```: Bool denoting whether to generate a "link to top" after each year's section.
 * ```bottom_link```: Bool denoting whether to generate a "link to top" after this bibliography.
 * ```highlight```: String, e.g., a name, that will be entailed in a \<strong\> tag to highlight.
+* ```all_bibtex```: Provide a link to the original .bib file
 
 The ```PUBLICATIONS_NAVBAR``` variable can be used to specify whether or not to produce a line that contains
 links to each bibliography section.
@@ -99,6 +101,8 @@ You probably want to define a 'publications.html' direct template.  Don't forget
 to add it to the `DIRECT_TEMPLATES` configuration key.  Note that we are escaping
 the BibTeX string twice in order to properly display it.  This can be achieved
 using `forceescape`.
+
+<details><summary>Click to reveal template</summary>
 
 ```jinja2
 {% extends "page.html" %}
@@ -196,6 +200,8 @@ using `forceescape`.
 
 {% endblock %}
 ```
+
+</details>
 
 This template uses Jinja filter to parse the resulting text with Markdown.
 
