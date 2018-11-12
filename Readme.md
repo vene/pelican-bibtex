@@ -106,11 +106,18 @@ PUBLICATIONS_NAVBAR = True
 Template Example
 ================
 
-You probably want to define a 'publications.html' direct template that makes use of the variables this plugin defines.
+You probably want to define a `publications.html` direct template that makes use of the variables this plugin defines.
 Create an appropriate template file in the folder ```templates``` and add it to pelican's search path by editing ```pelicanconf.py```:
 
 ```python
 EXTRA_TEMPLATES_PATHS = [ 'templates' ]
+```
+
+The template also needs to be included in your page by adding the following to the header section.
+The entry must match the template's file name.
+
+```rst
+:template: publications
 ```
 
 ---
@@ -120,11 +127,20 @@ If you don't define a template, this plugin won't achieve you any visible result
 
 ---
 
+Consider the following template for inclusion. It respects all configuration methods described above.
+Additionally, the following header entries can be used per page to restrict what bibliographies are displayed on that page and on which (header) level.
+
+```rst
+:bibliographies: modified-defaults,simple-example
+:bibheader: 2
+```
+
+By default, all bibliographies are considered and included with a `<h2>` tag.
+
 <details><summary>Click to reveal template</summary>
 
 ```jinja2
 {% extends "page.html" %}
-
 {% block content %}
 
 <!-- header part: original bootstrap pages content block -->
@@ -270,12 +286,6 @@ def md(content, *args):
 JINJA_FILTERS = {
     'md': md,
 }
-```
-
-This template needs to be included in you page by adding the following to the header section:
-
-```rst
-:template: publications
 ```
 
 Extending this plugin
