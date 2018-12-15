@@ -43,9 +43,6 @@ def add_publications(generator):
         Values are lists of tuples (key, year, text, bibtex, pdf, slides, poster)
         See Readme.md for more details.
 
-    generator.context['split']:
-        Flag whether or not publications should be splitted
-
     generator.context['publications']:
         Contains all publications as a list of tuples
         (key, year, text, bibtex, pdf, slides, poster).
@@ -109,7 +106,6 @@ def add_publications(generator):
             tags = entry.fields.get(split_by, None)
 
             # parse to list, and trim each string
-            # tags = tags.strip()
             if tags:
                 tags = tags.split(",")
                 tags = list(map(str.strip, tags))
