@@ -47,7 +47,8 @@ def add_publications(generator):
         Flag whether or not publications should be splitted
 
     generator.context['publications']:
-        (Deprecated) List of tuples (key, year, text, bibtex, pdf, slides, poster).
+        Contains all publications as a list of tuples
+        (key, year, text, bibtex, pdf, slides, poster).
         See Readme.md for more details.
     """
     if 'PUBLICATIONS_SRC' not in generator.settings:
@@ -75,7 +76,8 @@ def add_publications(generator):
             str(e)))
         return
 
-    publications_lists = {'all' : []}
+    publications = []
+    publications_lists = {}
     publications_untagged = []
 
     split_by = None
@@ -127,7 +129,7 @@ def add_publications(generator):
         entry_tuple = (key, year, text, bib_buf.getvalue(),
                        pdf, slides, poster)
 
-        publications_lists['all'].append(entry_tuple)
+        publications.append(entry_tuple)
 
         for tag in tags:
             publications_lists[tag].append(entry_tuple)
@@ -139,16 +141,10 @@ def add_publications(generator):
     if untagged_title and publications_untagged:
         publications_lists[untagged_title] = publications_untagged
 
-    # for backward compatibility to 0.2.1
-    generator.context['publications'] = publications_lists['all']
 
-    if split_by:
-        del publications_lists['all']
-        generator.context['publications_lists'] = publications_lists
-        generator.context['split'] = True
-    else:
-        generator.context['publications_lists'] = publications_lists
-        generator.context['split'] = False
+    # output
+    generator.context['publications'] = publications
+    generator.context['publications_lists'] = publications_lists
 
 
 
