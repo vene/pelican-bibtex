@@ -101,19 +101,18 @@ def add_publications(generator):
         slides = entry.fields.get('slides', None)
         poster = entry.fields.get('poster', None)
 
-        tags = []
         if split_by:
-            tags = entry.fields.get(split_by, None)
+            tags = entry.fields.get(split_by, [])
 
             # parse to list, and trim each string
             if tags:
                 tags = tags.split(",")
                 tags = list(map(str.strip, tags))
 
-            # create keys in publications_lists if at least one
-            # tag is given
-            for tag in tags:
-                publications_lists[tag] = publications_lists.get(tag, [])
+                # create keys in publications_lists if at least one
+                # tag is given
+                for tag in tags:
+                    publications_lists[tag] = publications_lists.get(tag, [])
 
 
         #render the bibtex string for the entry
