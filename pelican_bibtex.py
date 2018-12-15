@@ -26,12 +26,28 @@ def add_publications(generator):
     Configuration
     -------------
     generator.settings['PUBLICATIONS_SRC']:
-        local path to the BibTeX file to read.
+        Local path to the BibTeX file to read.
+
+    generator.settings['PUBLICATIONS_SPLIT_BY']:
+        The name of the bibtex field used for splitting the publications.
+        No splitting if title is not provided.
+
+    generator.settings['PUBLICATIONS_UNTAGGED_TITLE']:
+        The title of the header for all untagged entries.
+        No such list if title is not provided.
 
     Output
     ------
+    generator.context['publications_lists']:
+        A map with keys retrieved from the field named in PUBLICATIONS_SPLIT_TAG.
+        Values are lists of tuples (key, year, text, bibtex, pdf, slides, poster)
+        See Readme.md for more details.
+
+    generator.context['split']:
+        Flag whether or not publications should be splitted
+
     generator.context['publications']:
-        List of tuples (key, year, text, bibtex, pdf, slides, poster).
+        (Deprecated) List of tuples (key, year, text, bibtex, pdf, slides, poster).
         See Readme.md for more details.
     """
     if 'PUBLICATIONS_SRC' not in generator.settings:
@@ -59,7 +75,17 @@ def add_publications(generator):
             str(e)))
         return
 
-    publications = []
+    publications_lists = {'all' : []}
+    publications_untagged = []
+
+    split_by = None
+    untagged_title = None
+
+    if 'PUBLICATIONS_SPLIT_BY' in generator.settings:
+        split_by = generator.settings['PUBLICATIONS_SPLIT_BY']
+
+    if 'PUBLICATIONS_UNTAGGED_TITLE' in generator.settings:
+        untagged_title = generator.settings['PUBLICATIONS_UNTAGGED_TITLE']
 
     # format entries
     plain_style = plain.Style()
@@ -76,21 +102,54 @@ def add_publications(generator):
         slides = entry.fields.get('slides', None)
         poster = entry.fields.get('poster', None)
 
+        tags = []
+        if split_by:
+            tags = entry.fields.get(split_by, None)
+
+            # parse to list, and trim each string
+            # tags = tags.strip()
+            if tags:
+                tags = tags.split(",")
+                tags = list(map(str.strip, tags))
+
+            # create keys in publications_lists if at least one
+            # tag is given
+            for tag in tags:
+                publications_lists[tag] = publications_lists.get(tag, [])
+
+
         #render the bibtex string for the entry
         bib_buf = StringIO()
         bibdata_this = BibliographyData(entries={key: entry})
         Writer().write_stream(bibdata_this, bib_buf)
         text = formatted_entry.text.render(html_backend)
 
-        publications.append((key,
-                             year,
-                             text,
-                             bib_buf.getvalue(),
-                             pdf,
-                             slides,
-                             poster))
+        entry_tuple = (key, year, text, bib_buf.getvalue(),
+                       pdf, slides, poster)
 
-    generator.context['publications'] = publications
+        publications_lists['all'].append(entry_tuple)
+
+        for tag in tags:
+            publications_lists[tag].append(entry_tuple)
+
+        if not tags and untagged_title:
+            publications_untagged.append(entry_tuple)
+
+    # append untagged list if title is given
+    if untagged_title and publications_untagged:
+        publications_lists[untagged_title] = publications_untagged
+
+    # for backward compatibility to 0.2.1
+    generator.context['publications'] = publications_lists['all']
+
+    if split_by:
+        del publications_lists['all']
+        generator.context['publications_lists'] = publications_lists
+        generator.context['split'] = True
+    else:
+        generator.context['publications_lists'] = publications_lists
+        generator.context['split'] = False
+
 
 
 def register():
