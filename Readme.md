@@ -59,6 +59,29 @@ This plugin will take all defined fields and make them available in the template
 If a field is not defined, the tuple field will be `None`.  Furthermore, the
 fields are stripped from the generated BibTeX (found in the `bibtex` field).
 
+Split into lists of publications
+--------------------------------
+
+You can add an extra field to each bibtex entry. This field has a value as a comma seperated list.
+These values are the keys of lists containing the associated bibtex entries.
+
+For example, if you want to associate an entry with two different tags (foo-tag, bar-tag), 
+you add the following field to the bib entry:
+
+```
+@article{
+   foo13
+   ...
+   tags = {foo-tag, bar-tag}
+}
+```
+
+You'll need to set `PUBLICATIONS_SPLIT_BY = 'tags'` in your `pelicanconf.py`. In your template 
+(see below), you can then access these lists with the variables `publications_lists['foo-tag']` 
+and `publications_lists['bar-tag']`
+
+With `PUBLICATIONS_UNTAGGED_TITLE = 'others'` you can assign all untagged entries 
+to the variable `publications_lists['others']`.
 
 Template Example
 ================
@@ -98,6 +121,40 @@ using `forceescape`.
     </ul>
 </section>
 {% endblock %}
+```
+
+Using lists of publications
+---------------------------
+
+The variable `publications_lists` is a map with the keys being the comma seperated entries of the field
+defined in `PUBLICATIONS_SPLIT_BY`. You can replace `publications` from the previous example with
+`publications_lists['foo-tag']` to only show the publications with the tag `foo-tag`. 
+
+You can also iterate over the map and present all bib entries of each list. 
+The section of the previous example changes to:
+
+```python
+...
+<section id="content" class="body">
+    <h1 class="entry-title">Publications</h1>
+
+	{% for tag in publications_lists %}
+	   {% if publications_lists|length > 1 %}
+        		<h2>{{tag}}</h2>
+	   {% endif %}
+	   <ul>
+	    {% for key, year, text, bibtex, pdf, slides, poster in  publications_lists[tag] %}
+	    <li id="{{ key }}">{{ text }}
+	    [&nbsp;<a href="javascript:disp('{{ bibtex|replace('\n', '\\n')|escape|forceescape }}');">Bibtex</a>&nbsp;]
+	    {% for label, target in [('PDF', pdf), ('Slides', slides), ('Poster', poster)] %}
+	    {{ "[&nbsp;<a href=\"%s\">%s</a>&nbsp;]" % (target, label) if target }}
+	    {% endfor %}
+	    </li>
+	    {% endfor %}
+	   </ul>
+	{% endfor %}
+</section>
+...
 ```
 
 Extending this plugin
