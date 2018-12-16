@@ -76,7 +76,7 @@ you add the following field to the bib entry:
 }
 ```
 
-You'll need to set `PUBLICATIONS_SPLIT_BY = tags` in your `pelicanconf.py`. In your template 
+You'll need to set `PUBLICATIONS_SPLIT_BY = 'tags'` in your `pelicanconf.py`. In your template 
 (see below), you can then access these lists with the variables `publications_lists['foo-tag']` 
 and `publications_lists['bar-tag']`
 
@@ -128,9 +128,9 @@ Using lists of publications
 
 The variable `publications_lists` is a map with the keys being the comma seperated entries of the field
 defined in `PUBLICATIONS_SPLIT_BY`. You can replace `publications` from the previous example with
-`publications_lists['foo-tag']` to only show the publications with the tag `foo-tag`. You can also iterate
-over the map and present all bib entries of each list:
+`publications_lists['foo-tag']` to only show the publications with the tag `foo-tag`. 
 
+You can also iterate over the map and present all bib entries of each list. 
 The section of the previous example changes to:
 
 ```python
