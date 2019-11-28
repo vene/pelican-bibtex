@@ -139,6 +139,8 @@ def add_publications(generator):
             pdf = entry.fields.get('pdf', None)
             slides = entry.fields.get('slides', None)
             poster = entry.fields.get('poster', None)
+            doi = entry.fields.get('doi', None)
+            url = entry.fields.get('url', None)
 
             #render the bibtex string for the entry
             bib_buf = StringIO()
@@ -154,7 +156,9 @@ def add_publications(generator):
                                 bib_buf.getvalue(),
                                 pdf,
                                 slides,
-                                poster))
+                                poster,
+                                doi,
+                                url))
 
         generator.context['publications'][rid] = {}
         generator.context['publications'][rid]['title'] = title
