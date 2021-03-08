@@ -94,9 +94,9 @@ The following example contains a default entry `simple-example` plus a secondary
 
 ```python
 PUBLICATIONS = {
-  'simple-example': { 'file': 'content/all.bib' },
+  'simple-example': { 'file': 'all.bib' },
   'modified-defaults': {
-    'file': 'content/all.bib',
+    'file': 'all.bib',
     'title': 'Different Appearance',
     'header': False,
     'split': False,
