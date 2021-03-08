@@ -78,7 +78,7 @@ def add_publications(generator):
 
     for rid in refs:
         ref = refs[rid]
-        bibfile = ref['file']
+        bibfile = os.path.join(generator.settings['PATH'], ref['file'])
         try:
             bibdata_all = Parser().parse_file(bibfile)
         except PybtexError as e:
@@ -111,7 +111,7 @@ def add_publications(generator):
             bottom_link = ref['bottom_link']
         else:
             bottom_link = True
-        
+
         if 'all_bibtex' in ref:
             all_bibtex = ref['all_bibtex']
         else:
