@@ -143,8 +143,11 @@ def add_publications(generator):
             url = entry.fields.get('url', None)
 
             #render the bibtex string for the entry
+            entry_clean = entry
+            for to_del in ['pdf', 'slides', 'poster', 'tags']:
+              entry_clean.fields.pop(to_del, None)
             bib_buf = StringIO()
-            bibdata_this = BibliographyData(entries={key: entry})
+            bibdata_this = BibliographyData(entries={key: entry_clean})
             Writer().write_stream(bibdata_this, bib_buf)
             text = formatted_entry.text.render(html_backend)
             for replace in highlights:
