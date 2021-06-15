@@ -19,6 +19,8 @@ from pelican import signals
 
 import os.path
 
+import re
+
 __version__ = '0.2.1'
 
 
@@ -122,6 +124,11 @@ def add_publications(generator):
         else:
             highlights = []
 
+        if 'group_type' in ref:
+            group_type = ref['group_type']
+        else:
+            group_type = False
+
         publications = []
 
         # format entries
@@ -133,6 +140,14 @@ def add_publications(generator):
             key = formatted_entry.key
             entry = bibdata_all.entries[key]
             year = entry.fields.get('year')
+            typee = entry.type
+
+            if entry.fields.get('tags'):
+              tags = [tag.strip() for tag in entry.fields.get('tags').split(';')]
+            else:
+              tags = []
+
+            display_tags = [x for x in tags if x != "doi-open" and x != "url-open"]
 
             # This shouldn't really stay in the field dict
             # but new versions of pybtex don't support pop
@@ -142,20 +157,34 @@ def add_publications(generator):
             doi = entry.fields.get('doi', None)
             url = entry.fields.get('url', None)
 
-            #render the bibtex string for the entry
-            entry_clean = entry
+
+            #clean fields from appearing in bibtex and on website
+            entry_tmp = entry
             for to_del in ['pdf', 'slides', 'poster', 'tags']:
-              entry_clean.fields.pop(to_del, None)
+              entry_tmp.fields.pop(to_del, None)
+
+            #render the bibtex string for the entry
             bib_buf = StringIO()
-            bibdata_this = BibliographyData(entries={key: entry_clean})
+            bibdata_this = BibliographyData(entries={key: entry_tmp})
             Writer().write_stream(bibdata_this, bib_buf)
-            text = formatted_entry.text.render(html_backend)
+
+            #clean more fields from appearing on website
+            for to_del in ['doi', 'url']:
+              entry_tmp.fields.pop(to_del, None)
+
+            entry_clean = next(plain_style.format_entries(bibdata_this.entries.values()), None)
+
+            # apply highlight (strong)
+            text = entry_clean.text.render(html_backend)
             for replace in highlights:
               text = text.replace(replace, '<strong>' + replace + '</strong>')
 
             publications.append((key,
+                                typee,
                                 year,
                                 text,
+                                tags,
+                                display_tags,
                                 bib_buf.getvalue(),
                                 pdf,
                                 slides,
@@ -172,7 +201,10 @@ def add_publications(generator):
         generator.context['publications'][rid]['split_link'] = split_link
         generator.context['publications'][rid]['all_bibtex'] = all_bibtex
         generator.context['publications'][rid]['data'] = collections.OrderedDict()
-        generator.context['publications'][rid]['data'] = sorted(publications, key=lambda pub: pub[1], reverse=True)
+        if group_type:
+          generator.context['publications'][rid]['data'] = sorted(publications, key=lambda pub: (-int(pub[2].replace("in press", "9999")), pub[1]))
+        else:
+          generator.context['publications'][rid]['data'] = sorted(publications, key=lambda pub: -int(pub[2].replace("in press", "9999")))
 
 def register():
     signals.generator_init.connect(add_publications)
