@@ -147,6 +147,11 @@ def add_publications(generator):
             else:
               tags = []
 
+            if entry.fields.get('supplements'):
+              supplements = [tag.strip() for tag in entry.fields.get('supplements').split(';')]
+            else:
+              supplements = []
+
             display_tags = [x for x in tags if x != "doi-open" and x != "url-open"]
 
             # This shouldn't really stay in the field dict
@@ -160,7 +165,7 @@ def add_publications(generator):
 
             #clean fields from appearing in bibtex and on website
             entry_tmp = entry
-            for to_del in ['pdf', 'slides', 'poster', 'tags']:
+            for to_del in ['pdf', 'slides', 'poster', 'tags', 'supplements']:
               entry_tmp.fields.pop(to_del, None)
 
             #render the bibtex string for the entry
@@ -185,6 +190,7 @@ def add_publications(generator):
                                 text,
                                 tags,
                                 display_tags,
+                                supplements,
                                 bib_buf.getvalue(),
                                 pdf,
                                 slides,
