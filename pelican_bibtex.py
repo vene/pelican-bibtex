@@ -208,9 +208,22 @@ def add_publications(generator):
         generator.context['publications'][rid]['all_bibtex'] = all_bibtex
         generator.context['publications'][rid]['data'] = collections.OrderedDict()
         if group_type:
-          generator.context['publications'][rid]['data'] = sorted(publications, key=lambda pub: (-int(pub[2].replace("in press", "9999")), pub[1]))
+          generator.context['publications'][rid]['data'] = sorted(publications,
+                                                                  key=lambda pub: (
+                                                                      -int(
+                                                                          pub[2].
+                                                                          replace("in press", "9900").
+                                                                          replace("under review", "9901")
+                                                                      ),
+                                                                      pub[1]))
         else:
-          generator.context['publications'][rid]['data'] = sorted(publications, key=lambda pub: -int(pub[2].replace("in press", "9999")))
+          generator.context['publications'][rid]['data'] = sorted(publications,
+                                                                  key=lambda pub: 
+                                                                      -int(
+                                                                          pub[2].
+                                                                          replace("in press", "9900").
+                                                                          replace("under review", "9901")
+                                                                        ))
 
 def register():
     signals.generator_init.connect(add_publications)
